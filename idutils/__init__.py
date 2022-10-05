@@ -835,7 +835,9 @@ def normalize_isbn(val):
     """
     if is_isbn10(val):
         val = isbnlib.to_isbn13(val)
-    return isbnlib.mask(isbnlib.canonical(val))
+    canonical = isbnlib.canonical(val)
+    masked = isbnlib.mask(canonical)
+    return masked or canonical
 
 
 def normalize_issn(val):
@@ -938,4 +940,4 @@ def to_url(val, scheme, url_scheme="http"):
     return ""
 
 
-__version__ = "1.1.12"
+__version__ = "1.2.0.dev0"
