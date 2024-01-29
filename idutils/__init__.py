@@ -384,6 +384,11 @@ viaf_regexp = re.compile(
 )
 """See https://www.wikidata.org/wiki/Property:P214."""
 
+email_regexp = re.compile(r"\S+@(\S+\.)+\S+")
+
+sha1_regexp = re.compile(r"^[a-fA-F0-9]{40}$")
+"""See https://www.w3.org/TR/annotation-model/#agents."""
+
 
 def _convert_x_to_10(x):
     """Convert char to int with X being converted to 10."""
@@ -698,6 +703,20 @@ def is_viaf(val):
         return False
 
 
+def is_email(val):
+    """Test if argument looks like an email address.
+
+    Note this test is designed to distinguish an email from other identifier
+    schemes only. It does not imply a valid address / domain etc.
+    """
+    return email_regexp.match(val)
+
+
+def is_sha1(val):
+    """Test if argument is a valid SHA-1 (hex) hash."""
+    return sha1_regexp.match(val)
+
+
 PID_SCHEMES = [
     ("doi", is_doi),
     ("ark", is_ark),
@@ -733,6 +752,8 @@ PID_SCHEMES = [
     ("arrayexpress_experiment", is_arrayexpress_experiment),
     ("swh", is_swh),
     ("viaf", is_viaf),
+    ("email", is_email),
+    ("sha1", is_sha1),
 ]
 """Definition of scheme name and associated test function.
 
@@ -979,11 +1000,14 @@ LANDING_URLS = {
     "genome": "{scheme}://www.ncbi.nlm.nih.gov/assembly/{pid}",
     "geo": "{scheme}://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={pid}",
     "arrayexpress_array": "{scheme}://www.ebi.ac.uk/arrayexpress/arrays/{pid}",
-    "arrayexpress_experiment": "{scheme}://www.ebi.ac.uk/arrayexpress/experiments/{pid}",
+    "arrayexpress_experiment": (
+        "{scheme}://www.ebi.ac.uk/arrayexpress/experiments/{pid}"
+    ),
     "hal": "{scheme}://hal.archives-ouvertes.fr/{pid}",
     "swh": "{scheme}://archive.softwareheritage.org/{pid}",
     "ror": "{scheme}://ror.org/{pid}",
     "viaf": "{scheme}://viaf.org/viaf/{pid}",
+    "email": "mailto:{pid}",
 }
 """URL generation configuration for the supported PID providers."""
 
